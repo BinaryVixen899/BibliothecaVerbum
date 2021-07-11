@@ -7,10 +7,19 @@ opts = ChromeOptions()
 opts.headless = True
 assert opts.headless == True
 browser = Chrome(options=opts)
-browser.get('https://duckduckgo.com')
-search_form = browser.find_element_by_id('search_form_input_homepage')
-print(search_form)
-search_form.send_keys('real python')
-search_form.submit()
-results = browser.find_elements_by_class_name('result')
-print(results[0].text)
+browser.get('https://www.goodreads.com/quotes/tag/harry-potter?page=1')
+results = browser.find_elements_by_class_name('quoteText')
+for x in results:
+    print (x.text + "\n")
+while True:
+    nextbutton = browser.find_element_by_class_name("next_page")
+    nextbutton.click()
+    results = browser.find_elements_by_class_name('quoteText')
+    for x in results:
+        print (x.text + "\n")
+    try:
+      browser.find_element_by_class_name("next_page disabled")
+      False
+    except:
+      True
+browser.quit()
