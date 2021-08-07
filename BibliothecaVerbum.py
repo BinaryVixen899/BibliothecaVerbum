@@ -1,3 +1,4 @@
+from langdetect.detector_factory import detect_langs
 import selenium
 from selenium import webdriver
 from selenium.webdriver import Chrome
@@ -13,7 +14,8 @@ browser = Chrome(options=opts)
 browser.get('https://www.goodreads.com/quotes/tag/harry-potter?page=1')
 results = browser.find_elements_by_class_name('quoteText')
 #Note to self fix the exceptions here at some point, I had a version of this that definitely checked exceptions properly
-
+#Okay so now what I need to do is get it to filter
+#Also get it to write
 while True:
     nextbutton = browser.find_element_by_class_name("next_page")
     nextbutton.click()
@@ -21,12 +23,13 @@ while True:
     ic(len(results))
 
     for x in results:
-        if 'J.K. Rowling' in x.text:
+        if 'J.K. Rowling' in x.text and detect(x.text) == 'en':
             print (x.text + "\n")
     try:
         browser.find_element_by_css_selector("body > div.content > div.mainContentContainer > div.mainContent > div.mainContentFloat > div.leftContainer > div:nth-child(20) > div > span.next_page.disabled") 
         browser.quit()     
     except:
           True
-    
+
+
 browser.quit()
