@@ -10,7 +10,7 @@ opts = ChromeOptions()
 opts.headless = False
 assert opts.headless == False
 browser = Chrome(options=opts)
-browser.get('https://www.goodreads.com/quotes/tag/harry-potter?page=22')
+browser.get('https://www.goodreads.com/quotes/tag/harry-potter?page=1')
 results = browser.find_elements_by_class_name('quoteText')
 #Note to self fix the exceptions here at some point, I had a version of this that definitely checked exceptions properly
 
@@ -19,7 +19,7 @@ while True:
     nextbutton.click()
     results = browser.find_elements_by_class_name('quoteText')
     ic(len(results))
-    
+
     for x in results:
         if 'J.K. Rowling' in x.text:
             print (x.text + "\n")
