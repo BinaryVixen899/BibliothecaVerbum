@@ -1,0 +1,11 @@
+asttokens==2.0.5
+click==8.0.1
+colorama==0.4.4
+executing==0.8.0
+icecream==2.1.1
+langdetect==1.0.9
+libxml2-python==2.9.12
+Pygments==2.9.0
+selenium==3.141.0
+six==1.16.0
+urllib3==1.26.6
