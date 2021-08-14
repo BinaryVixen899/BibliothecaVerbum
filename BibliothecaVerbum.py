@@ -1,3 +1,4 @@
+from typing_extensions import Required
 import icecream
 from langdetect.detector_factory import detect_langs
 import selenium
@@ -15,7 +16,7 @@ opts.headless = False
 assert opts.headless == False
 browser = Chrome(options=opts)
 browser.get('https://goodreads.com')
-results = browser.find_elements_by_class_name('quoteText')
+#results = browser.find_elements_by_class_name('quoteText')
 #Note to self fix the exceptions here at some point, I had a version of this that definitely checked exceptions properly
 #Okay so now what I need to do is get it to filter
 #Also get it to write
@@ -51,39 +52,67 @@ def author(book):
         ic(i.text)
         titleresults.append(i.text)
     ic(titleresults)
-    authorresults = browser.find_elements_by_class_name('authorName')
-    
+    temp = browser.find_elements_by_class_name('authorName')
+    ic(temp)
+    authorresults = []
+    for i in temp: 
+        ic(i.text)
+        authorresults.append(i.text)
+
     #So the thing we've reached here is that we have these two collections of elements and want to make those telements into a key value pair 
     booksandauthors = dict(zip(titleresults,authorresults))
+    ic(booksandauthors)
     for i in booksandauthors.keys():
-        print(i, booksandauthors.values[i])
+        print(i, booksandauthors[i])
         if click.confirm('Is the above your book?'):
-            #Call the main function
-            BibliothecaVerbum()
-            pass
-        
+            i = browser.find_elements_by_partial_link_text('/work/quotes')
+            i.click()
+            FromBookPageSearch(book=i,author=booksandauthors[i])
 
-def main():
+def navigate():
+    nextbutton = browser.find_element_by_class_name("next_page")
+    nextbutton.click()
+
+
+
+#we want to preserve the below function but also reuse it
+#Something we definitely need to add is an unless clause checkin for first page 
+def main(*args):
     with open('./fortunefile', 'w') as f:
-     
+        
         while True:
-            nextbutton = browser.find_element_by_class_name("next_page")
-            nextbutton.click()
-            results = browser.find_elements_by_class_name('quoteText')
-            ic(len(results))
+            if 'currentpage=' in 'browser.current_url':
+                try:
+                    navigate()
+                    results = browser.find_elements_by_class_name('quoteText')
+                    ic(len(results))
+                    addtoFortune(f, results)
+                    #add ending here
+                except:
+                    results = browser.find_elements_by_class_name('quoteText')
+                    ic(len(results))
+                    addtoFortune(f, results)
+                    navigate()
+                    #add ending here
+
             
-            for x in results:
-                if 'J.K. Rowling' in x.text and detect(x.text) == 'en':
-                    y = re.sub(r"J.K. Rowling,?",'',x.text,flags=re.IGNORECASE)
-                    f.write(y + "\n")
-                    f.write("%")
-                    f.write("\n")
             try:
                 browser.find_element_by_css_selector("body > div.content > div.mainContentContainer > div.mainContent > div.mainContentFloat > div.leftContainer > div:nth-child(20) > div > span.next_page.disabled") 
                 f.closed
                 browser.quit()     
             except:
-                True
+                pass
+  
+def addtoFortune(f, results, author='Required'):
+    if author == 'Required':
+        print("You do actually need this.")
+    for x in results:
+        if author in x.text and detect(x.text) == 'en':
+            y = re.sub(r"#{author},?",'',x.text,flags=re.IGNORECASE)
+            f.write(y + "\n")
+            f.write("%")
+            f.write("\n")
+
 
 if __name__ == '__main__':
     search()
