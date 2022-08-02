@@ -1,4 +1,3 @@
-from typing_extensions import Required
 import icecream
 from langdetect.detector_factory import detect_langs
 import selenium
@@ -46,11 +45,16 @@ def author(book):
     searchform = browser.find_element_by_class_name("submitLink")
     searchform.submit()
     temp = browser.find_elements_by_class_name('bookTitle')
+    #we need to get the value of the href here
     ic(temp)
     titleresults = []
     for i in temp:
         ic(i.text)
-        titleresults.append(i.text)
+        titleresults.append([i.text,i.getAttribute("href")])
+        #So we need some way to like, actually remember these elements 
+        #we also need to save the href
+        #really we should be zipping these all together in one section
+        #LISTS THE KEY IS LISTS 
     ic(titleresults)
     temp = browser.find_elements_by_class_name('authorName')
     ic(temp)
@@ -58,6 +62,10 @@ def author(book):
     for i in temp: 
         ic(i.text)
         authorresults.append(i.text)
+        
+    
+
+
 
     #So the thing we've reached here is that we have these two collections of elements and want to make those telements into a key value pair 
     booksandauthors = dict(zip(titleresults,authorresults))
@@ -65,7 +73,10 @@ def author(book):
     for i in booksandauthors.keys():
         print(i, booksandauthors[i])
         if click.confirm('Is the above your book?'):
-            i = browser.find_elements_by_partial_link_text('/work/quotes')
+            #We need a step here where we click on that book
+            #In order to do that we need the href as well.
+            
+            i = browser.find_elements_by_partial_link_text('/work/quotes') 
             i.click()
             FromBookPageSearch(book=i,author=booksandauthors[i])
 
@@ -99,7 +110,7 @@ def main(*args):
             try:
                 browser.find_element_by_css_selector("body > div.content > div.mainContentContainer > div.mainContent > div.mainContentFloat > div.leftContainer > div:nth-child(20) > div > span.next_page.disabled") 
                 f.closed
-                browser.quit()     
+                browser.quit()
             except:
                 pass
   
